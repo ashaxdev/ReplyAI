@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "C:\\Users\\91948\\Desktop\\repliai-enterprise\\backend\\logs\\.a3accd863cc765fd60b4e9795851c23541a1e360-audit.json",
+    "files": [
+        {
+            "date": 1776446343230,
+            "name": "C:\\Users\\91948\\Desktop\\repliai-enterprise\\backend\\logs\\error-2026-04-17.log",
+            "hash": "e0cb63730cde03b3cba4fbc56f1b5c5c55aab6d4aa9d59e3a351a5ca26aca193"
+        }
+    ],
+    "hashType": "sha256"
+}
