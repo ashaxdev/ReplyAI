@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
 const ordersRoute = require('./routes/orders');
+const adsRoutes = require('./routes/ads');
+
 
 const connectDB = require('./config/database');
 const logger = require('./utils/logger');
@@ -93,6 +95,7 @@ app.use('/api/team', teamRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/webhooks', webhookRoutes);
 app.use('/api/orders', ordersRoute);
+app.use('/api/ads', adsRoutes);
 
 
 
