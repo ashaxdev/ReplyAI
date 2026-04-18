@@ -5,6 +5,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
+const ordersRoute = require('./routes/orders');
 
 const connectDB = require('./config/database');
 const logger = require('./utils/logger');
@@ -12,6 +13,9 @@ const {
   securityHeaders, generalLimiter, sanitizeInputs,
   xssProtection, paramPollutionProtect, requestLogger
 } = require('./middleware/security');
+const { startReEngagementJob, startQuotaResetJob } = require('./jobs/reEngagement');
+startReEngagementJob();
+startQuotaResetJob();
 
 // ── Routes ────────────────────────────────────────────────────────
 const authRoutes = require('./routes/auth');
@@ -88,6 +92,9 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/team', teamRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/webhooks', webhookRoutes);
+app.use('/api/orders', ordersRoute);
+
+
 
 // ── Health Check ──────────────────────────────────────────────────
 app.get('/health', (req, res) => {
