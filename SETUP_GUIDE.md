@@ -280,8 +280,8 @@ FRONTEND_URL = https://your-app.vercel.app
 ### 7.2 Add WhatsApp Product
 1. In App dashboard → **Add Products** → Find **WhatsApp** → **Set Up**
 2. Go to **WhatsApp → API Setup**
-3. Note your **Phone Number ID** (looks like: `123456789012345`)
-4. Note your **WhatsApp Business Account ID**
+3. Note your **Phone Number ID** (looks like: `123456789012345`)1033381253199780
+4. Note your **WhatsApp Business Account ID**  1399287615260765
 5. For testing: Use the **Temporary Access Token** (valid 24hrs)
 6. For production: Create a **System User** token (permanent)
 
@@ -311,8 +311,8 @@ FRONTEND_URL = https://your-app.vercel.app
 1. Your Instagram must be **Business or Creator** type
 2. Link to a Facebook Page
 3. In Meta App → **Add Products** → **Instagram**
-4. Get your **Instagram Account ID** from the API Setup page
-5. Generate a **Page Access Token** from your linked Facebook Page
+4. Get your **Instagram Account ID** from the API Setup page 17841479078795640
+5. Generate a **Page Access Token** from your linked Facebook Page  IGAALgzcpoCLZABZAFpZAX040eVpqSk5kLTBxT0M4aE1WdklQbEFVT2pPTGJ6dk9DMXFmT0ZASQkIwZAVpZAa2hBcktubnhKR1dwN1VYVGM2aUdOUVZAnVGE4c0RjbTVqVC1fSzdSSFZAwTGN0d3Nibm9FQ2ZAXQWxaUTFhMnNNd3BZASGpLVQZDZD
 6. Enable permissions: `instagram_manage_messages`, `instagram_basic`
 7. Connect Instagram in ReplyAI dashboard the same way
 

@@ -194,6 +194,11 @@ router.get('/instagram/:tenantId', async (req, res) => {
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
+  const tenant = await Tenant.findById(tenantId);
+  console.log('Tenant found:', !!tenant);
+  console.log('Platforms:', JSON.stringify(tenant?.platforms?.map(p => ({ platform: p.platform, isConnected: p.isConnected, token: p.webhookVerifyToken }))));
+  console.log('Token received:', token);
+
   if (mode === 'subscribe') {
     const tenant = await Tenant.findById(tenantId);
     const conn = tenant?.platforms.find(p => p.platform === 'instagram');
