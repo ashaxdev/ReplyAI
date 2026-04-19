@@ -188,25 +188,48 @@ router.post('/whatsapp/:tenantId', webhookLimiter, async (req, res) => {
 });
 
 // ── Instagram Webhook Verification ───────────────────────────────
+// router.get('/instagram/:tenantId', async (req, res) => {
+//   const { tenantId } = req.params;
+//   const mode = req.query['hub.mode'];
+//   const token = req.query['hub.verify_token'];
+//   const challenge = req.query['hub.challenge'];
+
+//   const tenant = await Tenant.findById(tenantId);
+//   console.log('Tenant found:', !!tenant);
+//   console.log('Platforms:', JSON.stringify(tenant?.platforms?.map(p => ({ platform: p.platform, isConnected: p.isConnected, token: p.webhookVerifyToken }))));
+//   console.log('Token received:', token);
+
+//   if (mode === 'subscribe') {
+//     const tenant = await Tenant.findById(tenantId);
+//     const conn = tenant?.platforms.find(p => p.platform === 'instagram');
+//     if (conn?.webhookVerifyToken === token) return res.send(challenge);
+//   }
+//   res.sendStatus(403);
+// });
+
 router.get('/instagram/:tenantId', async (req, res) => {
   const { tenantId } = req.params;
-  const mode = req.query['hub.mode'];
-  const token = req.query['hub.verify_token'];
-  const challenge = req.query['hub.challenge'];
+
+  const mode = req.query['hub.mode'] || req.query['hub_mode'];
+  const token = req.query['hub.verify_token'] || req.query['hub_verify_token'];
+  const challenge = req.query['hub.challenge'] || req.query['hub_challenge'];
+
+  console.log("Query:", req.query);
+  console.log("Mode:", mode);
+  console.log("Token:", token);
+  console.log("Challenge:", challenge);
 
   const tenant = await Tenant.findById(tenantId);
-  console.log('Tenant found:', !!tenant);
-  console.log('Platforms:', JSON.stringify(tenant?.platforms?.map(p => ({ platform: p.platform, isConnected: p.isConnected, token: p.webhookVerifyToken }))));
-  console.log('Token received:', token);
+  const conn = tenant?.platforms.find(p => p.platform === 'instagram');
 
-  if (mode === 'subscribe') {
-    const tenant = await Tenant.findById(tenantId);
-    const conn = tenant?.platforms.find(p => p.platform === 'instagram');
-    if (conn?.webhookVerifyToken === token) return res.send(challenge);
+  if (mode === 'subscribe' && conn?.webhookVerifyToken === token) {
+    console.log("Webhook verified ✅");
+    return res.status(200).send(challenge);
   }
-  res.sendStatus(403);
-});
 
+  console.log("Webhook failed ❌");
+  return res.sendStatus(403);
+});
 // ── Instagram Incoming ────────────────────────────────────────────
 router.post('/instagram/:tenantId', webhookLimiter, async (req, res) => {
   res.sendStatus(200);
