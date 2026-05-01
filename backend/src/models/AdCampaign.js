@@ -1,112 +1,130 @@
 const mongoose = require('mongoose');
 
-// ── Ad Creative ───────────────────────────────────────────────────
-const AdCreativeSchema = new mongoose.Schema({
-  headline:      { type: String, required: true },
-  primaryText:   { type: String, required: true },
+const MetricsSchema = new mongoose.Schema({
+  impressions:  { type: Number, default: 0 },
+  reach:        { type: Number, default: 0 },
+  clicks:       { type: Number, default: 0 },
+  leads:        { type: Number, default: 0 },
+  conversions:  { type: Number, default: 0 },
+  spend:        { type: Number, default: 0 },
+  revenue:      { type: Number, default: 0 },
+  ctr:          { type: Number, default: 0 },
+  cpl:          { type: Number, default: 0 },
+  cpo:          { type: Number, default: 0 },
+  roas:         { type: Number, default: 0 },
+  lastSyncedAt: Date,
+}, { _id: false });
+
+const AudienceSchema = new mongoose.Schema({
+  name:          String,
+  ageMin:        { type: Number, default: 18 },
+  ageMax:        { type: Number, default: 65 },
+  genders:       [String],
+  locations:     [String],
+  interests:     [String],
+  languages:     [String],
+  audienceType:  {
+    type: String,
+    enum: ['manual', 'lookalike', 'custom', 'advantage_plus'],
+    default: 'manual'
+  },
+  // Specific user targeting
+  customAudienceId:   String,   // Meta Custom Audience ID (from phone upload)
+  lookalikeSourceId:  String,   // Meta Custom Audience to base lookalike on
+  lookalikePercent:   Number,   // 1-10%
+  metaAudienceId:     String,
+  estimatedReach:     Number,
+}, { _id: false });
+
+const CreativeSchema = new mongoose.Schema({
+  headline:      String,
+  primaryText:   String,
   description:   String,
-  callToAction:  { type: String, enum: ['LEARN_MORE','SHOP_NOW','CONTACT_US','SIGN_UP','GET_QUOTE','BOOK_NOW'], default: 'SHOP_NOW' },
+  callToAction:  {
+    type: String,
+    enum: ['LEARN_MORE','SHOP_NOW','CONTACT_US','SIGN_UP','GET_QUOTE','BOOK_NOW','SEND_MESSAGE'],
+    default: 'SHOP_NOW'
+  },
   imageUrl:      String,
-  videoUrl:      String,
   hashtags:      [String],
-  // Meta IDs after upload
   metaCreativeId: String,
   metaAdId:       String,
 }, { _id: false });
 
-// ── Audience Targeting ────────────────────────────────────────────
-const AudienceSchema = new mongoose.Schema({
-  name:        String,
-  ageMin:      { type: Number, default: 18 },
-  ageMax:      { type: Number, default: 65 },
-  genders:     [{ type: String, enum: ['male', 'female', 'all'] }],
-  locations:   [String],          // city/state names
-  interests:   [String],          // Meta interest keywords
-  languages:   [String],
-  audienceType: { type: String, enum: ['manual', 'lookalike', 'custom', 'advantage_plus'], default: 'manual' },
-  // Lookalike source
-  lookalikeSourceId: String,      // Meta custom audience ID
-  lookalikePercent:  Number,      // 1–10%
-  // Meta IDs
-  metaAudienceId: String,
-  estimatedReach: Number,
-}, { _id: false });
-
-// ── Budget ────────────────────────────────────────────────────────
-const BudgetSchema = new mongoose.Schema({
-  type:       { type: String, enum: ['daily', 'lifetime'], default: 'daily' },
-  amount:     { type: Number, required: true },   // in INR
-  currency:   { type: String, default: 'INR' },
-  startDate:  Date,
-  endDate:    Date,
-}, { _id: false });
-
-// ── Performance Metrics ───────────────────────────────────────────
-const MetricsSchema = new mongoose.Schema({
-  impressions:    { type: Number, default: 0 },
-  reach:          { type: Number, default: 0 },
-  clicks:         { type: Number, default: 0 },
-  leads:          { type: Number, default: 0 },
-  conversions:    { type: Number, default: 0 },   // actual orders placed
-  spend:          { type: Number, default: 0 },   // INR spent
-  revenue:        { type: Number, default: 0 },   // revenue from this campaign
-  ctr:            { type: Number, default: 0 },   // click-through rate %
-  cpl:            { type: Number, default: 0 },   // cost per lead
-  cpo:            { type: Number, default: 0 },   // cost per order
-  roas:           { type: Number, default: 0 },   // return on ad spend
-  lastSyncedAt:   Date,
-}, { _id: false });
-
-// ── Main Campaign Schema ──────────────────────────────────────────
 const AdCampaignSchema = new mongoose.Schema({
-  tenantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: true, index: true },
+  // ── TENANT ISOLATION (mandatory on every query) ───────────────
+  tenantId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tenant',
+    required: true,
+    index: true
+  },
 
-  // Identity
+  // ── Campaign identity ─────────────────────────────────────────
   name:       { type: String, required: true },
-  objective:  { type: String, enum: ['LEAD_GENERATION', 'TRAFFIC', 'CONVERSIONS', 'BRAND_AWARENESS', 'REACH'], default: 'LEAD_GENERATION' },
-  platform:   { type: String, enum: ['instagram', 'facebook', 'both'], default: 'instagram' },
+  objective:  {
+    type: String,
+    enum: ['LEAD_GENERATION','TRAFFIC','CONVERSIONS','BRAND_AWARENESS','REACH'],
+    default: 'LEAD_GENERATION'
+  },
+  platform:   { type: String, enum: ['instagram','facebook','both'], default: 'instagram' },
+  productName: String,
+  productDescription: String,
+  productPrice: Number,
 
-  // Status
-  status:     { type: String, enum: ['draft', 'pending_review', 'active', 'paused', 'completed', 'rejected'], default: 'draft' },
-  metaCampaignId:  String,
+  // ── Status ────────────────────────────────────────────────────
+  status: {
+    type: String,
+    enum: ['draft','pending_review','active','paused','completed','rejected'],
+    default: 'draft'
+  },
+
+  // ── Meta IDs (per tenant, using their ad account) ─────────────
+  metaCampaignId:  String,   // ID in tenant's ad account
   metaAdSetId:     String,
-  metaAdAccountId: String,
+  metaAdAccountId: String,   // tenant's ad account: "act_XXXXXXXX"
+  metaLeadFormId:  String,
 
-  // Content
-  creative:  AdCreativeSchema,
+  // ── Campaign content ──────────────────────────────────────────
+  creative:  CreativeSchema,
   audience:  AudienceSchema,
-  budget:    BudgetSchema,
+  budget: {
+    type:      { type: String, enum: ['daily','lifetime'], default: 'daily' },
+    amount:    Number,
+    currency:  { type: String, default: 'INR' },
+    startDate: Date,
+    endDate:   Date,
+  },
 
-  // AI-generated suggestions
+  // ── AI-generated data ─────────────────────────────────────────
   aiTargetingSuggestion: {
-    generatedAt: Date,
-    summary:     String,
+    generatedAt:  Date,
+    summary:      String,
     topLocations: [String],
     topInterests: [String],
-    ageRange:    String,
-    reasoning:   String,
+    ageRange:     String,
+    reasoning:    String,
+    budgetTip:    String,
   },
 
   aiCopySuggestions: [{
-    variant:    String,   // 'A', 'B', 'C'
-    headline:   String,
+    variant:     String,
+    angle:       String,
+    headline:    String,
     primaryText: String,
     description: String,
-    score:      Number,   // AI confidence 0-100
+    hashtags:    [String],
+    score:       Number,
+    whyItWorks:  String,
   }],
 
-  // Lookalike export
-  lookalikeExportedAt: Date,
-  lookalikeCustomerCount: Number,
+  // ── Lookalike export tracking ─────────────────────────────────
+  lookalikeExportedAt:     Date,
+  lookalikeCustomerCount:  Number,
 
-  // Performance
-  metrics: MetricsSchema,
+  // ── Performance ───────────────────────────────────────────────
+  metrics: { type: MetricsSchema, default: () => ({}) },
 
-  // Lead form (Meta Instant Form)
-  leadFormId:    String,      // Meta lead form ID
-  leadFormFields: [String],   // fields collected: name, phone, email
-
-  // Notes
   notes: String,
   tags:  [String],
 }, {
@@ -114,18 +132,15 @@ const AdCampaignSchema = new mongoose.Schema({
   toJSON: { virtuals: true }
 });
 
-// Virtual: is running
-AdCampaignSchema.virtual('isActive').get(function() {
-  return this.status === 'active';
-});
-
 // Virtual: conversion rate
 AdCampaignSchema.virtual('conversionRate').get(function() {
-  if (!this.metrics.leads) return 0;
+  if (!this.metrics?.leads) return '0.0';
   return ((this.metrics.conversions / this.metrics.leads) * 100).toFixed(1);
 });
 
+// ── Indexes — ALL include tenantId for isolation ──────────────────
 AdCampaignSchema.index({ tenantId: 1, status: 1 });
 AdCampaignSchema.index({ tenantId: 1, createdAt: -1 });
+AdCampaignSchema.index({ tenantId: 1, metaCampaignId: 1 });
 
 module.exports = mongoose.model('AdCampaign', AdCampaignSchema);

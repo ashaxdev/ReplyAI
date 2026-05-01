@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
 const ordersRoute = require('./routes/orders');
-const adsRoutes = require('./routes/ads');
+// const adsRoutes = require('./routes/ads');
 
 
 const connectDB = require('./config/database');
@@ -29,6 +29,9 @@ const dashboardRoutes = require('./routes/dashboard');
 const teamRoutes = require('./routes/team');
 const auditRoutes = require('./routes/audit');
 const webhookRoutes = require('./webhooks');
+const adsRoutes           = require('./routes/ads');
+const adConnectionRoutes  = require('./routes/adConnection');
+const adsWebhook          = require('./webhooks/adsWebhook');
 
 // ── App Init ──────────────────────────────────────────────────────
 const app = express();
@@ -95,7 +98,9 @@ app.use('/api/team', teamRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/webhooks', webhookRoutes);
 app.use('/api/orders', ordersRoute);
-app.use('/api/ads', adsRoutes);
+app.use('/api/ads',            adsRoutes);
+app.use('/api/ads/connection', adConnectionRoutes);
+app.use('/webhooks/ads',       adsWebhook);
 
 
 
