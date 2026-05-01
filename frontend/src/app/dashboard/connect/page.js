@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import API from '../../../lib/api';
+import ConnectMetaAdsSection from './ads/page';
 
 export default function ConnectPage() {
   const [platforms, setPlatforms] = useState([]);
@@ -84,7 +85,7 @@ export default function ConnectPage() {
         </div>
       )}
 
-      <div className="grid-2" style={{ gap: '20px', marginBottom: '28px' }}>
+      <div className="grid-3" style={{ gap: '20px', marginBottom: '28px' }}>
         {/* WhatsApp */}
         <div className="card">
           <div className="flex-between" style={{ marginBottom: '18px' }}>
@@ -177,7 +178,8 @@ export default function ConnectPage() {
           )}
         </div>
       </div>
-
+      <ConnectMetaAdsSection/>
+    
       {/* How-to guide */}
       <div className="card">
         <h3 style={{ fontWeight: '700', fontSize: '15px', marginBottom: '16px' }}>📋 Quick Setup Guide</h3>
