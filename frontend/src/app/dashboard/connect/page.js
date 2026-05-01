@@ -85,7 +85,7 @@ export default function ConnectPage() {
         </div>
       )}
 
-      <div className="grid-3" style={{ gap: '20px', marginBottom: '28px' }}>
+      <div className="grid-2" style={{ gap: '20px', marginBottom: '28px' }}>
         {/* WhatsApp */}
         <div className="card">
           <div className="flex-between" style={{ marginBottom: '18px' }}>
